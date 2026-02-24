@@ -1,11 +1,12 @@
 // Mendix Trainer - Service Worker (PWA + Notifications)
-const CACHE_NAME = 'mendix-trainer-v1.1.0';
+const CACHE_NAME = 'mendix-trainer-v2.0.0';
 
 // Determine base path dynamically (works on GitHub Pages subpaths)
 const BASE = self.location.pathname.replace(/sw\.js$/, '');
 
 const ASSET_NAMES = [
     'index.html',
+    'tailwind.min.css',
     'style.css',
     'app.js',
     'questions-intermediate.js',
@@ -13,6 +14,9 @@ const ASSET_NAMES = [
     'manifest.json',
     'icon-192.svg',
     'icon-512.svg',
+    'icon-180.png',
+    'icon-192.png',
+    'icon-512.png',
 ];
 
 const ASSETS = [BASE, ...ASSET_NAMES.map(a => BASE + a)];

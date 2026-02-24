@@ -2,3 +2,7 @@ node_modules/
 .DS_Store
 Thumbs.db
 *.log
+tailwind-input.css
+tailwind.config.js
+package.json
+package-lock.json

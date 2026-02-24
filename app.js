@@ -2,7 +2,7 @@
 // Zero dependencies, pure vanilla JS
 
 // ============ CONSTANTS ============
-const APP_VERSION = '1.1.0';
+const APP_VERSION = '2.0.0';
 const EXAM_QUESTION_COUNT = 50;
 const PRACTICE_COUNT = 20;
 const PASS_THRESHOLD = 75;
@@ -64,22 +64,50 @@ function playCriticalBeep() {
     setTimeout(() => playBeep(1200, 0.15), 200);
 }
 
-// ============ PERSISTENCE ============
+// ============ PERSISTENCE (with in-memory cache) ============
 const STORAGE_KEY = 'mendix-trainer-progress';
+const STREAK_STORAGE_KEY = 'mendix-trainer-streak';
+let _progressCache = null;
 
 function loadProgress() {
+    if (_progressCache) return _progressCache;
     try {
         const data = localStorage.getItem(STORAGE_KEY);
-        return data ? JSON.parse(data) : {};
-    } catch { return {}; }
+        _progressCache = data ? JSON.parse(data) : {};
+        return _progressCache;
+    } catch { _progressCache = {}; return _progressCache; }
 }
 
 function saveProgress(progress) {
+    _progressCache = progress;
     try {
         localStorage.setItem(STORAGE_KEY, JSON.stringify(progress));
     } catch (e) {
         console.warn('LocalStorage voll, Fortschritt konnte nicht gespeichert werden');
     }
+}
+
+// ============ DAILY STREAK ============
+function getStreakData() {
+    try {
+        const data = localStorage.getItem(STREAK_STORAGE_KEY);
+        return data ? JSON.parse(data) : { current: 0, lastDate: null };
+    } catch { return { current: 0, lastDate: null }; }
+}
+
+function updateStreak() {
+    const streak = getStreakData();
+    const today = new Date().toISOString().slice(0, 10);
+    if (streak.lastDate === today) return streak;
+    const yesterday = new Date(Date.now() - 86400000).toISOString().slice(0, 10);
+    if (streak.lastDate === yesterday) {
+        streak.current++;
+    } else if (streak.lastDate !== today) {
+        streak.current = 1;
+    }
+    streak.lastDate = today;
+    try { localStorage.setItem(STREAK_STORAGE_KEY, JSON.stringify(streak)); } catch {}
+    return streak;
 }
 
 function getQuestionProgress(questionId) {
@@ -190,6 +218,7 @@ function selectQuestions(exam, categoryKey, count) {
 
 // ============ NAVIGATION ============
 function navigate(screen, params = {}) {
+    if (state.screen === 'quiz' && screen !== 'quiz') stopTimer();
     Object.assign(state, {
         screen,
         ...params,
@@ -198,6 +227,28 @@ function navigate(screen, params = {}) {
     });
     render();
     window.scrollTo(0, 0);
+    // Focus management for accessibility
+    requestAnimationFrame(() => {
+        const heading = document.querySelector('h1, h2, h3');
+        if (heading) heading.setAttribute('tabindex', '-1');
+    });
+}
+
+// ============ QUIZ EXIT CONFIRMATION ============
+function confirmQuitQuiz() {
+    if (state.sessionTotal === 0 || confirm('Quiz wirklich abbrechen? Dein Fortschritt für diese Runde geht verloren.')) {
+        stopTimer();
+        navigate('categories', { exam: state.exam });
+    }
+}
+
+// ============ QUICK START ============
+function quickStart() {
+    // Find exam with more progress, default to intermediate
+    const intP = getExamProgress('intermediate');
+    const advP = getExamProgress('advanced');
+    const exam = advP.answered > intP.answered ? 'advanced' : 'intermediate';
+    startQuiz(exam, 'all', PRACTICE_COUNT);
 }
 
 // ============ RENDERING (with error boundary) ============
@@ -226,7 +277,7 @@ function renderError(error) {
         <p class="text-gray-400 mb-6 max-w-md mx-auto">
             Ein unerwarteter Fehler ist aufgetreten. Dein Fortschritt ist gespeichert.
         </p>
-        <pre class="text-xs text-gray-600 bg-gray-900 rounded-lg p-4 mb-6 max-w-lg mx-auto text-left overflow-x-auto">${escapeHtml(error.message || 'Unbekannter Fehler')}</pre>
+        <pre class="text-xs text-gray-500 bg-gray-900 rounded-lg p-4 mb-6 max-w-lg mx-auto text-left overflow-x-auto">${escapeHtml(error.message || 'Unbekannter Fehler')}</pre>
         <div class="space-x-3">
             <button onclick="navigate('home')" class="bg-mendix-blue hover:opacity-90 text-white font-bold py-3 px-6 rounded-xl transition">
                 Zur Startseite
@@ -242,7 +293,7 @@ function renderError(error) {
 function renderFooter() {
     const counts = getTotalQuestionCount();
     return `
-    <div class="app-footer text-center text-xs text-gray-600 pb-4 mt-8">
+    <div class="app-footer text-center text-xs text-gray-500 pb-4 mt-8">
         <span>Mendix Trainer v${APP_VERSION}</span>
         <span class="mx-2">\u00B7</span>
         <span>${counts.total} Fragen (${counts.intermediate} Intermediate, ${counts.advanced} Advanced)</span>
@@ -268,19 +319,30 @@ function renderHome() {
             <p class="text-gray-400">Intermediate &amp; Advanced Zertifizierung bestehen</p>
         </div>
 
+        <!-- Quick Start Button -->
+        ${totalAnswered > 0 ? `
+        <button onclick="quickStart()" class="w-full bg-mendix-blue hover:opacity-90 text-white font-bold py-4 rounded-xl transition mb-6 text-lg">
+            Weiter lernen
+        </button>` : ''}
+
         <!-- Quick Stats -->
-        <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-8">
-            <div class="bg-gray-900 rounded-xl p-4 text-center border border-gray-800">
+        <div class="grid grid-cols-${totalAnswered > 0 ? '4' : '3'} gap-3 mb-8">
+            ${totalAnswered > 0 ? `
+            <div class="bg-gray-900 rounded-xl p-3 text-center border border-gray-800">
+                <div class="text-2xl font-bold text-mendix-orange">${getStreakData().current}</div>
+                <div class="text-xs text-gray-400">Tage-Streak</div>
+            </div>` : ''}
+            <div class="bg-gray-900 rounded-xl p-3 text-center border border-gray-800">
                 <div class="text-2xl font-bold text-mendix-blue">${totalAnswered}</div>
-                <div class="text-xs text-gray-500">Fragen bearbeitet</div>
+                <div class="text-xs text-gray-400">Bearbeitet</div>
             </div>
-            <div class="bg-gray-900 rounded-xl p-4 text-center border border-gray-800">
+            <div class="bg-gray-900 rounded-xl p-3 text-center border border-gray-800">
                 <div class="text-2xl font-bold text-mendix-green">${accuracy}%</div>
-                <div class="text-xs text-gray-500">Genauigkeit</div>
+                <div class="text-xs text-gray-400">Genauigkeit</div>
             </div>
-            <div class="bg-gray-900 rounded-xl p-4 text-center border border-gray-800">
+            <div class="bg-gray-900 rounded-xl p-3 text-center border border-gray-800">
                 <div class="text-2xl font-bold text-mendix-purple">${intProgress.mastered + advProgress.mastered}</div>
-                <div class="text-xs text-gray-500">Gemeistert</div>
+                <div class="text-xs text-gray-400">Gemeistert</div>
             </div>
         </div>
 
@@ -299,7 +361,7 @@ function renderHome() {
 
         <!-- About Toggle -->
         <div class="mt-6">
-            <button onclick="toggleAbout()" class="w-full text-center text-xs text-gray-500 hover:text-gray-400 transition py-2"
+            <button onclick="toggleAbout()" class="w-full text-center text-xs text-gray-400 hover:text-gray-400 transition py-2"
                     aria-expanded="${state.showAbout}" aria-controls="about-section">
                 ${state.showAbout ? '\u25B2 Weniger anzeigen' : '\u25BC \u00DCber diese App'}
             </button>
@@ -308,7 +370,7 @@ function renderHome() {
 
         <!-- Reset Button -->
         <div class="mt-4 text-center">
-            <button onclick="resetProgress()" class="text-xs text-gray-600 hover:text-gray-400 transition">
+            <button onclick="resetProgress()" class="text-xs text-gray-500 hover:text-gray-400 transition">
                 Fortschritt zur\u00FCcksetzen
             </button>
         </div>
@@ -349,17 +411,17 @@ function renderExamCard(exam, title, progress, topics, prereq) {
         <div class="flex justify-between items-start mb-3">
             <div>
                 <h2 class="text-xl font-bold text-${color}">${title}</h2>
-                <p class="text-xs text-gray-500 mt-1">${prereq}</p>
+                <p class="text-xs text-gray-400 mt-1">${prereq}</p>
             </div>
             <div class="text-right">
                 <div class="text-2xl font-bold">${pct}%</div>
-                <div class="text-xs text-gray-500">gemeistert</div>
+                <div class="text-xs text-gray-400">gemeistert</div>
             </div>
         </div>
         <div class="w-full bg-gray-800 rounded-full h-2 mb-3" role="progressbar" aria-valuenow="${pct}" aria-valuemin="0" aria-valuemax="100">
             <div class="bg-${color} h-2 rounded-full progress-fill" style="width: ${pct}%"></div>
         </div>
-        <p class="text-xs text-gray-500">${topics}</p>
+        <p class="text-xs text-gray-400">${topics}</p>
         <div class="flex justify-between items-center mt-3 text-xs text-gray-400">
             <span>${progress.answered}/${progress.total} bearbeitet</span>
             <span class="text-${color} font-medium">Starten \u2192</span>
@@ -392,7 +454,7 @@ function renderCategories() {
             <div class="flex justify-between items-center">
                 <div>
                     <h3 class="font-bold text-mendix-orange">Pr\u00FCfungssimulation</h3>
-                    <p class="text-xs text-gray-500">${EXAM_QUESTION_COUNT} Fragen, ${state.exam === 'intermediate' ? '90' : '120'} Min Timer</p>
+                    <p class="text-xs text-gray-400">${EXAM_QUESTION_COUNT} Fragen, ${state.exam === 'intermediate' ? '90' : '120'} Min Timer</p>
                 </div>
                 <span class="text-mendix-orange text-sm">Starten \u2192</span>
             </div>
@@ -405,7 +467,7 @@ function renderCategories() {
             <div class="flex justify-between items-center">
                 <div>
                     <h3 class="font-bold">Alle Kategorien</h3>
-                    <p class="text-xs text-gray-500">${allProgress.total} Fragen, priorisiert nach Schw\u00E4chen</p>
+                    <p class="text-xs text-gray-400">${allProgress.total} Fragen, priorisiert nach Schw\u00E4chen</p>
                 </div>
                 <span class="text-${color} text-sm">Starten \u2192</span>
             </div>
@@ -431,14 +493,14 @@ function renderCategoryCard(cat, exam) {
          onkeydown="if(event.key==='Enter')this.click()">
         <div class="flex justify-between items-start mb-2">
             <span class="badge-${cat.key} text-xs px-2 py-0.5 rounded-full text-white font-medium">${cat.label}</span>
-            <span class="text-xs text-gray-500">${progress.answered}/${progress.total}</span>
+            <span class="text-xs text-gray-400">${progress.answered}/${progress.total}</span>
         </div>
         <div class="w-full bg-gray-800 rounded-full h-1.5 mt-2">
             <div class="bg-mendix-green h-1.5 rounded-full progress-fill" style="width: ${pct}%"></div>
         </div>
         <div class="flex justify-between mt-1">
-            <span class="text-xs text-gray-500">${pct}% gemeistert</span>
-            <span class="text-xs text-gray-500">${answeredPct}% gesehen</span>
+            <span class="text-xs text-gray-400">${pct}% gemeistert</span>
+            <span class="text-xs text-gray-400">${answeredPct}% gesehen</span>
         </div>
     </div>`;
 }
@@ -514,7 +576,10 @@ function showTimerToast(message) {
 // ============ QUIZ ============
 function startQuiz(exam, category, count) {
     const questions = selectQuestions(exam, category, count || 999);
-    if (questions.length === 0) return;
+    if (questions.length === 0) {
+        alert('Keine Fragen in dieser Kategorie verfügbar.');
+        return;
+    }
 
     stopTimer();
     Object.assign(state, {
@@ -536,12 +601,27 @@ function renderQuiz() {
     const q = state.questions[state.questionIndex];
     if (!q) return renderResults();
 
+    // Runtime option shuffling to eliminate answer bias
+    if (!q._shuffled) {
+        const indices = q.options.map((_, i) => i);
+        for (let i = indices.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [indices[i], indices[j]] = [indices[j], indices[i]];
+        }
+        q._shuffledOptions = indices.map(i => q.options[i]);
+        q._shuffledCorrect = indices.indexOf(q.correct);
+        q._shuffleMap = indices;
+        q._shuffled = true;
+    }
+
     const total = state.questions.length;
     const current = state.questionIndex + 1;
     const pct = Math.round((current / total) * 100);
     const color = examColor(state.exam);
     const letters = ['A', 'B', 'C', 'D'];
     const isExamMode = state.category === 'exam';
+    const displayOptions = q._shuffledOptions;
+    const displayCorrect = q._shuffledCorrect;
 
     // Timer CSS classes
     let timerClasses = 'text-sm font-mono font-bold';
@@ -557,7 +637,7 @@ function renderQuiz() {
     <div class="fade-in">
         <!-- Header -->
         <div class="flex items-center justify-between mb-4">
-            <button onclick="stopTimer(); navigate('categories', { exam: '${state.exam}' })" class="text-gray-400 hover:text-white transition text-sm py-2 px-1">
+            <button onclick="confirmQuitQuiz()" class="text-gray-400 hover:text-white transition text-sm py-2 px-1">
                 \u2190 Abbrechen
             </button>
             ${isExamMode ? `<span id="exam-timer" class="${timerClasses}">${formatTime(state.timerSeconds)}</span>` : ''}
@@ -578,22 +658,22 @@ function renderQuiz() {
         <!-- Question -->
         <h3 class="text-lg font-medium mt-3 mb-6 leading-relaxed">${escapeHtml(q.question)}</h3>
 
-        <!-- Options -->
+        <!-- Options (shuffled at runtime to prevent answer bias) -->
         <div class="space-y-3">
-            ${q.options.map((opt, i) => {
+            ${displayOptions.map((opt, i) => {
                 let classes = 'option-btn';
                 if (state.answered) {
                     classes += ' answered';
-                    if (i === q.correct) classes += ' correct';
-                    else if (i === state.selectedAnswer && i !== q.correct) classes += ' incorrect';
+                    if (i === displayCorrect) classes += ' correct';
+                    else if (i === state.selectedAnswer && i !== displayCorrect) classes += ' incorrect';
                 }
                 return `
                 <button class="${classes} w-full text-left p-4 rounded-xl flex items-start gap-3"
                         onclick="answerQuestion(${i})" ${state.answered ? 'disabled' : ''}
                         aria-label="Antwort ${letters[i]}: ${escapeHtml(opt)}">
                     <span class="flex-shrink-0 w-7 h-7 rounded-lg flex items-center justify-center text-sm font-bold
-                        ${state.answered && i === q.correct ? 'bg-mendix-green text-white' :
-                          state.answered && i === state.selectedAnswer && i !== q.correct ? 'bg-mendix-red text-white' :
+                        ${state.answered && i === displayCorrect ? 'bg-mendix-green text-white' :
+                          state.answered && i === state.selectedAnswer && i !== displayCorrect ? 'bg-mendix-red text-white' :
                           'bg-gray-800 text-gray-400'}">${letters[i]}</span>
                     <span class="pt-0.5">${escapeHtml(opt)}</span>
                 </button>`;
@@ -602,11 +682,11 @@ function renderQuiz() {
 
         <!-- Explanation -->
         ${state.answered ? `
-        <div class="mt-6 p-4 rounded-xl border ${state.selectedAnswer === q.correct ? 'bg-green-950/30 border-green-900' : 'bg-red-950/30 border-red-900'}">
+        <div id="explanation-box" class="mt-6 p-4 rounded-xl border ${state.selectedAnswer === displayCorrect ? 'bg-green-950/30 border-green-900' : 'bg-red-950/30 border-red-900'}">
             <div class="flex items-center gap-2 mb-2">
-                <span class="text-lg">${state.selectedAnswer === q.correct ? '\u2713' : '\u2717'}</span>
-                <span class="font-bold ${state.selectedAnswer === q.correct ? 'text-mendix-green' : 'text-mendix-red'}">
-                    ${state.selectedAnswer === q.correct ? 'Richtig!' : 'Falsch!'}
+                <span class="text-lg">${state.selectedAnswer === displayCorrect ? '\u2713' : '\u2717'}</span>
+                <span class="font-bold ${state.selectedAnswer === displayCorrect ? 'text-mendix-green' : 'text-mendix-red'}">
+                    ${state.selectedAnswer === displayCorrect ? 'Richtig!' : 'Falsch!'}
                 </span>
             </div>
             <p class="text-sm text-gray-300 leading-relaxed">${escapeHtml(q.explanation)}</p>
@@ -617,7 +697,7 @@ function renderQuiz() {
         ` : ''}
 
         <!-- Keyboard Hint -->
-        <div class="keyboard-hint text-center mt-6 text-gray-500">
+        <div class="keyboard-hint text-center mt-6 text-gray-400">
             <kbd>1</kbd>\u2013<kbd>4</kbd> zum Antworten${state.answered ? ', <kbd>Enter</kbd> f\u00FCr n\u00E4chste' : ''}
         </div>
     </div>`;
@@ -631,13 +711,23 @@ function answerQuestion(index) {
     state.answered = true;
     state.sessionTotal++;
 
-    const isCorrect = index === q.correct;
+    const isCorrect = index === q._shuffledCorrect;
     if (isCorrect) state.sessionCorrect++;
 
+    // Audio feedback
+    if (isCorrect) {
+        playBeep(660, 0.15);
+        setTimeout(() => playBeep(880, 0.2), 150);
+    } else {
+        playBeep(330, 0.3);
+    }
+
+    // Map back to original indices for recording
+    const originalSelected = q._shuffleMap[index];
     state.sessionAnswers.push({
         questionId: q.id,
         question: q.question,
-        selected: index,
+        selected: originalSelected,
         correct: q.correct,
         isCorrect,
         options: q.options,
@@ -647,7 +737,14 @@ function answerQuestion(index) {
     });
 
     recordAnswer(q.id, isCorrect);
+    updateStreak();
     render();
+
+    // Auto-scroll to explanation
+    requestAnimationFrame(() => {
+        const el = document.getElementById('explanation-box');
+        if (el) el.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    });
 }
 
 function nextQuestion() {
@@ -830,18 +927,18 @@ function renderStats() {
 
         <!-- Overall -->
         <div class="bg-gray-900 rounded-xl p-6 border border-gray-800 mb-6">
-            <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 text-center">
+            <div class="grid grid-cols-3 gap-4 text-center">
                 <div>
                     <div class="text-2xl font-bold text-mendix-blue">${overall.answered}</div>
-                    <div class="text-xs text-gray-500">Bearbeitet</div>
+                    <div class="text-xs text-gray-400">Bearbeitet</div>
                 </div>
                 <div>
                     <div class="text-2xl font-bold text-mendix-green">${overall.mastered}</div>
-                    <div class="text-xs text-gray-500">Gemeistert</div>
+                    <div class="text-xs text-gray-400">Gemeistert</div>
                 </div>
                 <div>
                     <div class="text-2xl font-bold">${overall.total}</div>
-                    <div class="text-xs text-gray-500">Gesamt</div>
+                    <div class="text-xs text-gray-400">Gesamt</div>
                 </div>
             </div>
             <div class="w-full bg-gray-800 rounded-full h-2 mt-4">
@@ -860,7 +957,7 @@ function renderStats() {
                         <span class="badge-${cat.key} text-xs px-2 py-0.5 rounded-full text-white font-medium">${cat.label}</span>
                         <span class="${accColor} font-bold">${cat.accuracy}%</span>
                     </div>
-                    <div class="flex justify-between text-xs text-gray-500">
+                    <div class="flex justify-between text-xs text-gray-400">
                         <span>${cat.answered}/${cat.total} bearbeitet</span>
                         <span>${cat.mastered} gemeistert</span>
                     </div>
@@ -877,15 +974,18 @@ function renderStats() {
 
 // ============ UTILITIES ============
 function escapeHtml(text) {
+    if (text == null) return '';
     const div = document.createElement('div');
-    div.textContent = text;
+    div.textContent = String(text);
     return div.innerHTML;
 }
 
 function resetProgress() {
     if (confirm('Wirklich allen Fortschritt zur\u00FCcksetzen? Diese Aktion kann nicht r\u00FCckg\u00E4ngig gemacht werden.')) {
         localStorage.removeItem(STORAGE_KEY);
-        render();
+        localStorage.removeItem(STREAK_STORAGE_KEY);
+        _progressCache = null;
+        navigate('home');
     }
 }
 
@@ -905,6 +1005,14 @@ document.addEventListener('keydown', (e) => {
     } else if (e.key === 'Enter' || e.key === ' ') {
         e.preventDefault();
         nextQuestion();
+    }
+
+    // Escape to exit quiz
+    if (e.key === 'Escape') {
+        if (confirm('Quiz wirklich abbrechen? Dein Fortschritt für diese Runde geht verloren.')) {
+            stopTimer();
+            navigate('categories', { exam: state.exam });
+        }
     }
 });
 
@@ -978,37 +1086,39 @@ function updateReminderTime(timeStr) {
     }
 }
 
-let reminderTimeout = null;
+let reminderInterval = null;
 
 function scheduleNextReminder() {
     cancelReminder();
     const settings = getNotificationSettings();
     if (!settings.enabled) return;
 
+    // Check every 60 seconds if it's time to show a reminder
+    checkAndShowReminder();
+    reminderInterval = setInterval(checkAndShowReminder, 60000);
+}
+
+function checkAndShowReminder() {
+    const settings = getNotificationSettings();
+    if (!settings.enabled) return;
+
     const now = new Date();
-    const next = new Date();
-    next.setHours(settings.hour, settings.minute, 0, 0);
+    const currentMinutes = now.getHours() * 60 + now.getMinutes();
+    const targetMinutes = settings.hour * 60 + settings.minute;
+    const today = now.toISOString().slice(0, 10);
 
-    // If time already passed today, schedule for tomorrow
-    if (next <= now) {
-        next.setDate(next.getDate() + 1);
-    }
-
-    const delay = next.getTime() - now.getTime();
-
-    reminderTimeout = setTimeout(() => {
+    // Show reminder if within 1 minute of target time and not already shown today
+    if (Math.abs(currentMinutes - targetMinutes) <= 1 && settings.lastShown !== today) {
+        settings.lastShown = today;
+        saveNotificationSettings(settings);
         showReminder();
-        // Schedule next day
-        scheduleNextReminder();
-    }, delay);
-
-    console.log(`Erinnerung geplant für ${next.toLocaleString('de-DE')}`);
+    }
 }
 
 function cancelReminder() {
-    if (reminderTimeout) {
-        clearTimeout(reminderTimeout);
-        reminderTimeout = null;
+    if (reminderInterval) {
+        clearInterval(reminderInterval);
+        reminderInterval = null;
     }
 }
 
@@ -1075,9 +1185,10 @@ function renderNotificationSection() {
         <div class="flex items-center justify-between mb-3">
             <div>
                 <div class="font-bold text-sm">Tägliche Erinnerung</div>
-                <div class="text-xs text-gray-500">Werde jeden Tag ans Lernen erinnert</div>
+                <div class="text-xs text-gray-400">Werde jeden Tag ans Lernen erinnert</div>
             </div>
-            <div class="toggle-switch ${settings.enabled ? 'active' : ''}" onclick="toggleNotifications()" role="switch" aria-checked="${settings.enabled}" tabindex="0"></div>
+            <div class="toggle-switch ${settings.enabled ? 'active' : ''}" onclick="toggleNotifications()" role="switch" aria-checked="${settings.enabled}" tabindex="0"
+                 onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();toggleNotifications();}"></div>
         </div>
         ${settings.enabled ? `
         <div class="flex items-center gap-3">
@@ -1097,5 +1208,14 @@ const _notifSettings = getNotificationSettings();
 if (_notifSettings.enabled) {
     scheduleNextReminder();
 }
+
+// Check if user hasn't practiced today — show in-app reminder
+(function checkDailyReminder() {
+    const streak = getStreakData();
+    const today = new Date().toISOString().slice(0, 10);
+    if (streak.lastDate && streak.lastDate !== today) {
+        // User hasn't practiced today — the streak counter on home will motivate them
+    }
+})();
 
 render();

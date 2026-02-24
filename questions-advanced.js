@@ -1458,4 +1458,196 @@ const ADVANCED_QUESTIONS = [
     correct: 1,
     explanation: 'Mendix unterstützt CI/CD über APIs: Die Build API erstellt Deployment Packages, die Deploy API deployed sie. Tests (Unit Tests via MUnit, UI Tests via ATS) können automatisiert vor dem Deployment ausgeführt werden. Tools wie Jenkins, Azure DevOps oder GitHub Actions können diese APIs ansprechen.'
 },
+
+// ============ PERFORMANCE & OPTIMIZATION (Neue Fragen) ============
+{
+    id: 'new-perf-001', category: 'performance', categoryLabel: 'Performance',
+    question: 'Wann sollten Indexes in Mendix erstellt werden?',
+    options: ['Auf Entitaeten mit mehr als 100 Datensaetzen die nicht nur ueber IDs gesucht werden', 'Nur auf Entitaeten mit mehr als 10.000 Datensaetzen', 'Nur auf primaere Schluessel', 'Indexes verlangsamen alles und sollten vermieden werden'],
+    correct: 0, explanation: 'Indexes sollten auf Entitaeten mit >100 Datensaetzen erstellt werden die durch andere Attribute als IDs gesucht werden.'
+},
+{
+    id: 'new-perf-002', category: 'performance', categoryLabel: 'Performance',
+    question: 'Wie optimiert man einen Microflow der 1000 Objekte einzeln committed?',
+    options: ['OQL-Query stattdessen verwenden', 'Commit auf Without Events setzen', 'Alle Objekte in einer Liste sammeln und einen einzigen List-Commit durchfuehren', 'Microflow asynchron ausfuehren'],
+    correct: 2, explanation: 'Best Practice: CommitList vor der Schleife erstellen, Objekte sammeln, nach der Schleife ein einziger List-Commit.'
+},
+{
+    id: 'new-perf-003', category: 'performance', categoryLabel: 'Performance',
+    question: 'Welche Batch-Verarbeitungsstrategie ist bei 500.000+ Objekten am performantesten?',
+    options: ['Alle Objekte auf einmal abrufen', 'Cursor-basierte Batch-Verarbeitung', 'Offset-basierte Batch-Verarbeitung mit Limit 10.000', 'Ein einzelner Microflow ohne Batch-Verarbeitung'],
+    correct: 1, explanation: 'Cursor-basierte Verarbeitung ist ca. 2x schneller als Offset-basierte, da keine wachsenden Offsets noetig sind.'
+},
+{
+    id: 'new-perf-004', category: 'performance', categoryLabel: 'Performance',
+    question: 'Welche XPath-Optimierung empfiehlt Mendix?',
+    options: ['contains fuer String-Suchen verwenden', 'Zuerst nach Attributen, dann nach Assoziationen filtern', 'OR-Operatoren fuer mehrere Bedingungen verwenden', 'unequal und not Klauseln vermeiden und in positive Ausdruecke umschreiben'],
+    correct: 3, explanation: 'Mendix empfiehlt positive Ausdruecke statt not/unequal, z.B. boolean=false() statt boolean!=true().'
+},
+{
+    id: 'new-perf-005', category: 'performance', categoryLabel: 'Performance',
+    question: 'Was ist der Standard ConnectionPoolingMaxActive Wert und wann aendern?',
+    options: ['Standard 50, sehr selten erhoehen da es meist nicht die richtige Loesung ist', 'Standard 10, bei Problemen erhoehen', 'Standard 100, bei wenig Benutzern reduzieren', 'Standard 200, nie aendern'],
+    correct: 0, explanation: 'Standard ist 50. Mendix betont dass eine Erhoehung sehr selten die richtige Massnahme ist.'
+},
+{
+    id: 'new-perf-006', category: 'errorHandling', categoryLabel: 'Error Handling',
+    question: 'Was passiert bei Custom without Rollback wenn der Fehlerbehandlungs-Pfad mit einem Error Event endet?',
+    options: ['Alle Aenderungen werden gespeichert', 'Nur die Aenderungen der fehlgeschlagenen Aktivitaet werden zurueckgesetzt', 'Alle Aenderungen werden zum initialen Savepoint zurueckgesetzt', 'Der Microflow wird ohne Rollback gestoppt'],
+    correct: 2, explanation: 'Bei Error Event am Ende werden alle Aenderungen zum Savepoint zurueckgesetzt, wie bei einem regulaeren Rollback.'
+},
+{
+    id: 'new-perf-007', category: 'errorHandling', categoryLabel: 'Error Handling',
+    question: 'Welche vordefinierten Error-Objekte stehen in einem Custom Error Handler zur Verfuegung?',
+    options: ['Nur $latestError', '$latestError, $latestSoapFault und $latestHttpResponse', 'Nur $errorMessage als String', '$exception und $stackTrace als separate Variablen'],
+    correct: 1, explanation: 'Drei Objekte: $latestError (System.Error), $latestSoapFault (System.SoapFault), $latestHttpResponse.'
+},
+{
+    id: 'new-perf-008', category: 'logging', categoryLabel: 'Logging',
+    question: 'Welche Reihenfolge der Mendix Log-Levels ist korrekt (detailliertestes zuerst)?',
+    options: ['Debug, Trace, Info, Warning, Error, Critical', 'Info, Debug, Trace, Warning, Error, Critical', 'Trace, Info, Debug, Warning, Error, Critical', 'Trace, Debug, Info, Warning, Error, Critical'],
+    correct: 3, explanation: 'Korrekte Reihenfolge: Trace, Debug, Info, Warning, Error, Critical.'
+},
+{
+    id: 'new-perf-009', category: 'logging', categoryLabel: 'Logging',
+    question: 'Was zeigt der Log-Node ConnectionBus auf Trace-Level?',
+    options: ['Alle SQL-Queries die an die Datenbank gesendet werden', 'Nur Verbindungsfehler', 'Nur die Anzahl aktiver Verbindungen', 'HTTP-Verbindungen zu externen Services'],
+    correct: 0, explanation: 'ConnectionBus auf Trace zeigt alle SQL-Queries. Unverzichtbar fuer Performance-Diagnose.'
+},
+{
+    id: 'new-perf-010', category: 'performance', categoryLabel: 'Performance',
+    question: 'Was passiert bei Auto-Committed Objects bezueglich Events?',
+    options: ['Before/After Commit Events werden normal ausgeloest', 'Auto-committed Objects existieren nur im Speicher', 'Auto-committed Objects loesen KEINE Before/After-Commit Events aus', 'Auto-committed Objects werden sofort geloescht'],
+    correct: 2, explanation: 'Auto-committed Objects werden automatisch in die DB geschrieben aber OHNE Before/After Commit Events.'
+},
+{
+    id: 'new-perf-011', category: 'performance', categoryLabel: 'Performance',
+    question: 'Was passiert wenn man eine Liste abruft und dann die Groesse zaehlt?',
+    options: ['Zwei separate Queries (SELECT und COUNT)', 'Mendix optimiert dies automatisch zu einer einzigen COUNT-Query', 'Mendix zaehlt im Arbeitsspeicher', 'Mendix cached die Liste'],
+    correct: 1, explanation: 'Mendix erkennt das Retrieve+Count Muster und optimiert es zu einer einzigen COUNT-Query.'
+},
+{
+    id: 'new-perf-012', category: 'performance', categoryLabel: 'Performance',
+    question: 'Welche Mendix-Funktion ermoeglicht horizontal skalierbare Hintergrundverarbeitung?',
+    options: ['Scheduled Events mit skip', 'Process Queue Modul', 'Java Actions mit Thread-Management', 'Task Queue - native Mendix-Loesung'],
+    correct: 3, explanation: 'Task Queue (seit Mendix 9) ist die native Loesung fuer asynchrone, horizontal skalierbare Hintergrundverarbeitung.'
+},
+{
+    id: 'new-perf-013', category: 'performance', categoryLabel: 'Performance',
+    question: 'Was ist die empfohlene Maximalanzahl an Attributen in einem Composite Index?',
+    options: ['Maximal 3, hoechstens 5', 'Maximal 2', 'Maximal 10', 'Kein Limit'],
+    correct: 0, explanation: 'Mendix empfiehlt unter 3, maximal 5 Index-Spalten. Reihenfolge entscheidend.'
+},
+{
+    id: 'new-perf-014', category: 'errorHandling', categoryLabel: 'Error Handling',
+    question: 'Warum wird die Error-Handling-Option Continue nicht empfohlen?',
+    options: ['Weil sie mehr Speicher verbraucht', 'Weil sie nicht mit Subflows kompatibel ist', 'Weil sie Fehler verschleiert - kein automatisches Logging oder Fehlermeldung', 'Weil sie immer ein Rollback durchfuehrt'],
+    correct: 2, explanation: 'Continue verschleiert Probleme. Mendix empfiehlt Custom without Rollback stattdessen.'
+},
+{
+    id: 'new-perf-015', category: 'errorHandling', categoryLabel: 'Error Handling',
+    question: 'Welche vier Error-Handling-Optionen stehen in einem Mendix Microflow zur Verfuegung?',
+    options: ['Try, Catch, Finally, Throw', 'Rollback, Custom with Rollback, Custom without Rollback, Continue', 'Abort, Retry, Ignore, Log', 'Cancel, Revert, Skip, Proceed'],
+    correct: 1, explanation: 'Vier Optionen: Rollback (Standard), Custom with Rollback, Custom without Rollback und Continue.'
+},
+
+// ============ JAVA ACTIONS (Neue Fragen) ============
+{
+    id: 'new-java-001', category: 'java', categoryLabel: 'Java Actions',
+    question: 'Welche Methode wird in der generierten Java-Klasse einer Java Action verwendet?',
+    options: ['executeAction()', 'runAction()', 'performAction()', 'invokeAction()'],
+    correct: 0, explanation: 'Fuer jede Java Action generiert Mendix eine Klasse mit einer executeAction() Methode.'
+},
+{
+    id: 'new-java-002', category: 'java', categoryLabel: 'Java Actions',
+    question: 'Was ist der Zweck eines Type Parameters in einer Java Action?',
+    options: ['Er definiert den Datentyp der Konstanten', 'Er legt den Rueckgabetyp fest', 'Er verschiebt die Entity-Typ-Auswahl auf den Zeitpunkt der Verwendung', 'Er bestimmt die Sichtbarkeit'],
+    correct: 2, explanation: 'Ein Type Parameter macht die Java Action generisch - der Entity-Typ wird erst bei Verwendung im Microflow festgelegt.'
+},
+{
+    id: 'new-java-003', category: 'java', categoryLabel: 'Java Actions',
+    question: 'Wie greift man typsicher auf Entity-Attribute in einer Java Action zu?',
+    options: ['Ueber IMendixObject.getAttribute()', 'Ueber die generierten Proxy-Klassen im proxies-Package', 'Ueber Core.retrieveAttribute()', 'Ueber IContext.getObjectValue()'],
+    correct: 1, explanation: 'Das proxies-Package enthaelt generierte Klassen mit typsicheren get/set-Methoden.'
+},
+{
+    id: 'new-java-004', category: 'java', categoryLabel: 'Java Actions',
+    question: 'Welche Core API Methode ruft Objekte per XPath aus der Datenbank ab?',
+    options: ['Core.queryDatabase()', 'Core.findObjects()', 'Core.selectByXPath()', 'Core.retrieveXPathQuery()'],
+    correct: 3, explanation: 'Core.retrieveXPathQuery() ruft synchron Objekte basierend auf einer XPath-Abfrage ab.'
+},
+
+// ============ TESTING (Neue Fragen) ============
+{
+    id: 'new-testing-001', category: 'testing', categoryLabel: 'Testing',
+    question: 'Wie muss ein Microflow benannt sein damit er vom UnitTesting-Modul erkannt wird?',
+    options: ['Name muss mit Test beginnen', 'Name muss mit Unit beginnen', 'Name muss mit Verify beginnen', 'Name muss mit Check beginnen'],
+    correct: 0, explanation: 'Test-Microflows muessen mit Test beginnen, ohne Eingabeparameter, Boolean oder String als Rueckgabetyp.'
+},
+{
+    id: 'new-testing-002', category: 'testing', categoryLabel: 'Testing',
+    question: 'Was bedeutet ein nicht-leerer String als Rueckgabe eines Test-Microflows?',
+    options: ['Test war erfolgreich, String ist die Erfolgsmeldung', 'Test wird uebersprungen', 'Test ist fehlgeschlagen, String ist die Fehlermeldung', 'Test wird als Warning markiert'],
+    correct: 2, explanation: 'Bei String-Rueckgabetyp: leer = Erfolg, nicht-leer = fehlgeschlagen mit Fehlerbeschreibung.'
+},
+{
+    id: 'new-testing-003', category: 'testing', categoryLabel: 'Testing',
+    question: 'Wie konfiguriert man einen Conditional Breakpoint in Studio Pro?',
+    options: ['Filter auf den Breakpoint anwenden', 'Einen Conditional Breakpoint setzen', 'Breakpoint nur im Debug-Modus aktivieren', 'Eine Umgebungsvariable setzen'],
+    correct: 1, explanation: 'Breakpoints koennen mit Bedingungen versehen werden. Der Microflow haelt nur an wenn die Bedingung erfuellt ist.'
+},
+
+// ============ DEPLOYMENT (Neue Fragen) ============
+{
+    id: 'new-deploy-001', category: 'deployment', categoryLabel: 'Deployment',
+    question: 'Wo werden Konstanten pro Umgebung in Mendix Cloud konfiguriert?',
+    options: ['Im Model Options Tab der Environment Details', 'In Studio Pro Projekt-Konfiguration', 'In der constants.json Datei', 'Im Mendix Marketplace'],
+    correct: 0, explanation: 'Konstanten werden pro Umgebung im Model Options Tab der Environment Details konfiguriert.'
+},
+{
+    id: 'new-deploy-002', category: 'deployment', categoryLabel: 'Deployment',
+    question: 'Welche Umgebungen sind standardmaessig in einem Mendix Cloud Node verfuegbar?',
+    options: ['Development und Production', 'Staging, Test und Production', 'Test, Acceptance und Production', 'Development, Staging, Acceptance und Production'],
+    correct: 2, explanation: 'Die meisten Mendix Cloud Nodes haben Test, Acceptance und Production.'
+},
+{
+    id: 'new-deploy-003', category: 'deployment', categoryLabel: 'Deployment',
+    question: 'Was ist der Mendix Operator im Kontext von Private Cloud?',
+    options: ['Ein GUI-Tool fuer Cloud-Verwaltung', 'Ein Kubernetes-basierter Operator fuer Provisioning, Building, Deploying und Scaling', 'Ein Monitoring-Tool', 'Ein CI/CD-Plugin'],
+    correct: 1, explanation: 'Der Mendix Operator basiert auf Kubernetes und ist verantwortlich fuer Provisioning, Building, Deploying und Scaling.'
+},
+
+// ============ COLLABORATION (Neue Fragen) ============
+{
+    id: 'new-collab-001', category: 'collaboration', categoryLabel: 'Collaboration',
+    question: 'Welcher Konflikttyp entsteht wenn zwei Entwickler denselben Microflow aendern?',
+    options: ['Delete-Delete Konflikt', 'Create-Create Konflikt', 'Update-Lock Konflikt', 'Modify-Modify Konflikt'],
+    correct: 3, explanation: 'Gleichzeitige Aenderung am selben Dokument erzeugt einen Modify-Modify Konflikt.'
+},
+{
+    id: 'new-collab-002', category: 'collaboration', categoryLabel: 'Collaboration',
+    question: 'Was ist Merge feature branch?',
+    options: ['Einen Feature-Branch erstellen', 'Einen kompletten Branch in die Main Line mergen', 'Einzelne Revisionen kopieren', 'Einen Branch loeschen'],
+    correct: 1, explanation: 'Merge feature branch integriert einen kompletten Branch in die Main Line. Nur auf der Main Line verfuegbar.'
+},
+
+// ============ WORKFLOWS (Neue Fragen) ============
+{
+    id: 'new-wf-001', category: 'workflows', categoryLabel: 'Workflows',
+    question: 'Welche Microflow-Aktivitaet aendert den Zustand einer Workflow-Instanz?',
+    options: ['Call Workflow', 'Complete User Task', 'Retrieve Workflow Context', 'Change Workflow State'],
+    correct: 3, explanation: 'Change Workflow State ermoeglicht Abort, Continue, Pause, Unpause, Restart oder Retry auf eine Workflow-Instanz.'
+},
+{
+    id: 'new-wf-002', category: 'workflows', categoryLabel: 'Workflows',
+    question: 'Was repraesentiert System.WorkflowDefinition?',
+    options: ['Jede laufende Instanz', 'Die Liste aller User Tasks', 'Die Definition eines Workflows - ein Objekt pro Workflow in der App', 'Die Sicherheitseinstellungen'],
+    correct: 2, explanation: 'System.WorkflowDefinition repraesentiert den Workflow wie er in Studio Pro definiert ist, ein Objekt pro Workflow.'
+},
+{
+    id: 'new-wf-003', category: 'workflows', categoryLabel: 'Workflows',
+    question: 'Was passiert wenn bei einer User Task das On-Created-Event fehlschlaegt?',
+    options: ['Die User Task wird uebersprungen', 'Der Workflow wird neu gestartet', 'Die Task wird dem Administrator zugewiesen', 'Der State wird auf Failed gesetzt'],
+    correct: 3, explanation: 'Bei fehlgeschlagenem Event wird der User Task State auf Failed gesetzt.'
+},
 ];

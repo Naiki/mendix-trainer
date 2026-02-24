@@ -1346,4 +1346,276 @@ const INTERMEDIATE_QUESTIONS = [
     correct: 1,
     explanation: 'Marketplace-Module sollten nicht direkt modifiziert werden, da Updates alle eigenen Änderungen überschreiben. Stattdessen sollte man die Funktionalität erweitern: z.B. eigene Microflows erstellen die die Marketplace-Microflows aufrufen, oder Spezialisierungen der Marketplace-Entitäten anlegen.'
 },
+
+// ============ MICROFLOWS & NANOFLOWS (Neue Fragen) ============
+{
+    id: 'new-micro-001', category: 'microflows', categoryLabel: 'Microflows & Nanoflows',
+    question: 'Was ist der grundlegende Unterschied zwischen einem Microflow und einem Nanoflow in Mendix?',
+    options: ['Microflows laufen auf dem Server, Nanoflows laufen auf dem Client (Browser/Device)', 'Microflows laufen auf dem Client, Nanoflows auf dem Server', 'Microflows koennen nur in Web-Apps verwendet werden, Nanoflows nur in Mobile Apps', 'Es gibt keinen funktionalen Unterschied, nur die Benennung ist anders'],
+    correct: 0, explanation: 'Microflows werden serverseitig in der Mendix Runtime ausgefuehrt und eignen sich fuer Datenbank-Operationen, Integrationen und komplexe Geschaeftslogik. Nanoflows laufen clientseitig im Browser oder auf dem Geraet und sind damit auch offline-faehig.'
+},
+{
+    id: 'new-micro-002', category: 'microflows', categoryLabel: 'Microflows & Nanoflows',
+    question: 'Wann sollte ein Nanoflow statt eines Microflows verwendet werden?',
+    options: ['Wenn komplexe Datenbank-Abfragen durchgefuehrt werden muessen', 'Wenn externe REST-Services aufgerufen werden sollen', 'Wenn die App offline funktionieren muss oder einfache UI-Interaktionen wie das Togglen von Sichtbarkeit durchgefuehrt werden', 'Wenn Before/After Commit Event Handler ausgeloest werden sollen'],
+    correct: 2, explanation: 'Nanoflows sind ideal fuer Offline-First-Apps, einfache clientseitige Aktionen und Situationen, in denen wenig Daten abgerufen werden.'
+},
+{
+    id: 'new-micro-003', category: 'microflows', categoryLabel: 'Error Handling',
+    question: 'Welche Error-Handling-Optionen stehen in Mendix Microflows zur Verfuegung?',
+    options: ['Nur Rollback und Continue', 'Rollback (Standard), Custom with Rollback, Custom without Rollback und Continue', 'Try-Catch, Finally und Throw', 'Error Event, Warning Event und Info Event'],
+    correct: 1, explanation: 'Mendix bietet vier Error-Handling-Optionen: Rollback (Standard), Custom with Rollback, Custom without Rollback und Continue.'
+},
+{
+    id: 'new-micro-004', category: 'microflows', categoryLabel: 'Error Handling',
+    question: 'Was ist der Unterschied zwischen "Custom with Rollback" und "Custom without Rollback" beim Error Handling?',
+    options: ['Custom with Rollback zeigt dem User eine Fehlermeldung', 'Es gibt keinen Unterschied', 'Custom with Rollback loggt den Fehler, Custom without Rollback ignoriert ihn', 'Custom with Rollback macht alle Aenderungen rueckgaengig; Custom without Rollback nur die im fehlerhaften Sub-Microflow'],
+    correct: 3, explanation: 'Bei Custom with Rollback werden alle Aenderungen der gesamten Transaktion zurueckgerollt. Bei Custom without Rollback nur die Aenderungen im Sub-Microflow.'
+},
+{
+    id: 'new-micro-005', category: 'microflows', categoryLabel: 'Commit & Events',
+    question: 'Was passiert mit Before/After Commit Event Handlern bei autocommitted Objects?',
+    options: ['Before und After Events werden NICHT ausgefuehrt bei autocommitted Objects', 'Alle Event Handler werden normal ausgefuehrt', 'Nur Before Commit wird ausgefuehrt', 'Nur After Commit wird ausgefuehrt'],
+    correct: 0, explanation: 'Bei einem Autocommit werden KEINE Before/After Event Handler ausgefuehrt. Nur bei expliziten Commits werden alle Events getriggert.'
+},
+{
+    id: 'new-micro-006', category: 'microflows', categoryLabel: 'Commit & Events',
+    question: 'Was bewirkt die Eigenschaft "With Events" = No bei der Commit-Aktivitaet?',
+    options: ['Es wird kein Audit Trail erstellt', 'Das Objekt wird nicht in die Datenbank geschrieben', 'Die Before/After Commit Event Handler werden uebersprungen', 'Der Commit wird asynchron ausgefuehrt'],
+    correct: 2, explanation: 'Wenn With Events auf No gesetzt ist, werden die Commit Event Handler nicht ausgefuehrt und die meisten Validierungsregeln nicht getriggert.'
+},
+{
+    id: 'new-micro-007', category: 'microflows', categoryLabel: 'Scheduled Events',
+    question: 'Wie kann ein Microflow automatisch zu einem bestimmten Zeitpunkt wiederholt ausgefuehrt werden?',
+    options: ['Durch einen Timer-Widget auf einer Page', 'Durch Erstellen und Aktivieren eines Scheduled Events', 'Durch einen speziellen Loop im Microflow', 'Durch einen After Startup Microflow mit Sleep-Funktion'],
+    correct: 1, explanation: 'Scheduled Events ermoeglichen es, einen Microflow wiederholt in bestimmten Intervallen auszufuehren.'
+},
+{
+    id: 'new-micro-008', category: 'microflows', categoryLabel: 'List Operations',
+    question: 'Welche List-Operation gibt eine Liste zurueck, die Elemente enthaelt, die in BEIDEN Listen vorkommen?',
+    options: ['Union', 'Filter', 'Subtract', 'Intersect'],
+    correct: 3, explanation: 'Intersect gibt eine Liste zurueck mit Elementen die in beiden Eingabelisten vorhanden sind.'
+},
+{
+    id: 'new-micro-009', category: 'microflows', categoryLabel: 'List Operations',
+    question: 'Was ist der Unterschied zwischen der "List Operation" Aktivitaet und der "Change List" Aktivitaet?',
+    options: ['List Operation gibt eine NEUE Liste zurueck, Change List veraendert die bestehende Liste', 'Es gibt keinen Unterschied', 'Change List kann nur einzelne Objekte hinzufuegen', 'List Operation funktioniert nur in Microflows'],
+    correct: 0, explanation: 'List Operation gibt das Ergebnis als NEUE Liste zurueck. Change List veraendert die bestehende Liste direkt.'
+},
+{
+    id: 'new-micro-010', category: 'microflows', categoryLabel: 'Splits & Decisions',
+    question: 'Was ist ein Object Type Decision (Inheritance Split) in einem Microflow?',
+    options: ['Eine Entscheidung basierend auf einem Boolean-Ausdruck', 'Eine Entscheidung basierend auf der Anzahl der Objekte in einer Liste', 'Eine Entscheidung basierend auf dem Typ eines Objekts einer generalisierten Entitaet', 'Eine Entscheidung basierend auf dem Erstellungsdatum eines Objekts'],
+    correct: 2, explanation: 'Ein Object Type Decision verzweigt den Microflow basierend auf dem tatsaechlichen Typ eines Objekts einer generalisierten Entitaet.'
+},
+{
+    id: 'new-micro-011', category: 'microflows', categoryLabel: 'Loops',
+    question: 'Wie kann ein Loop in einem Microflow vorzeitig beendet werden?',
+    options: ['Durch ein End Event innerhalb des Loops', 'Durch ein Break Event', 'Durch ein Error Event', 'Durch ein Continue Event'],
+    correct: 1, explanation: 'Ein Break Event beendet den Loop vorzeitig. Ein Continue Event ueberspringt die aktuelle Iteration.'
+},
+{
+    id: 'new-micro-012', category: 'microflows', categoryLabel: 'Data Sources',
+    question: 'Wann sollte ein Microflow als Datenquelle fuer ein Data Widget verwendet werden?',
+    options: ['Nur bei Offline-Apps', 'Immer, da Microflows flexibler sind', 'Nur wenn mehr als 1000 Objekte angezeigt werden sollen', 'Wenn die Standardabfragen nicht ausreichen, z.B. bei sehr spezifischen Kriterien'],
+    correct: 3, explanation: 'Wenn Database, XPath oder Association als Datenquelle nicht ausreichen, bietet ein Microflow unbegrenzte Kontrolle ueber die zurueckgegebenen Objekte.'
+},
+{
+    id: 'new-micro-013', category: 'microflows', categoryLabel: 'Expressions',
+    question: 'Wie wird in einem Microflow-Ausdruck auf ein Attribut eines Objekts zugegriffen?',
+    options: ['$Customer/Name', '$Customer.Name', 'Customer->Name', '$Customer::Name'],
+    correct: 0, explanation: 'Objekte werden mit $ referenziert, Attribute und Assoziationen mit / getrennt.'
+},
+{
+    id: 'new-micro-014', category: 'microflows', categoryLabel: 'Rollback',
+    question: 'Was passiert beim Rollback eines NEU erstellten (noch nicht committed) Objekts?',
+    options: ['Das Objekt wird aus der Datenbank geloescht', 'Das Objekt wird auf seinen letzten committed Stand zurueckgesetzt', 'Das Objekt wird komplett entfernt, als haette es nie existiert', 'Rollback funktioniert nur bei bereits committeten Objekten'],
+    correct: 2, explanation: 'Bei einem neuen, noch nicht committeten Objekt wird das Objekt komplett entfernt.'
+},
+{
+    id: 'new-micro-015', category: 'microflows', categoryLabel: 'Integration',
+    question: 'In welchem Kontext koennen Import/Export Mapping Aktivitaeten verwendet werden?',
+    options: ['Nur in Nanoflows', 'Nur in Microflows', 'In Microflows und Nanoflows gleichermassen', 'Nur in Scheduled Events'],
+    correct: 1, explanation: 'Import/Export Mapping Aktivitaeten koennen NUR in Microflows verwendet werden.'
+},
+
+// ============ SECURITY (Neue Fragen) ============
+{
+    id: 'new-sec-001', category: 'security', categoryLabel: 'Security',
+    question: 'Welche Security Levels stehen in Mendix App Security zur Verfuegung?',
+    options: ['Off, Development, Staging, Production', 'None, Basic, Advanced, Enterprise', 'Off, Prototype/Demo, Production', 'Disabled, Enabled, Strict'],
+    correct: 2, explanation: 'Mendix bietet drei Security Levels: Off, Prototype/Demo und Production.'
+},
+{
+    id: 'new-sec-002', category: 'security', categoryLabel: 'Security',
+    question: 'Wie werden XPath-Constraints in Entity Access Rules technisch durchgesetzt?',
+    options: ['Als zusaetzliche WHERE-Klauseln den Datenbankabfragen hinzugefuegt', 'Clientseitig im Browser als JavaScript-Filter', 'Nur bei der Anzeige in Widgets gefiltert', 'Als Post-Processing nach dem Datenbank-Retrieve'],
+    correct: 0, explanation: 'XPath-Constraints werden direkt auf Datenbankebene durchgesetzt als zusaetzliche Bedingungen zu allen Retrieves.'
+},
+{
+    id: 'new-sec-003', category: 'security', categoryLabel: 'Security',
+    question: 'Was passiert wenn eine User Role Zugriff auf eine Page hat, aber NICHT auf ein Attribut das dort angezeigt wird?',
+    options: ['Die Anwendung stuerzt ab', 'Das Attribut wird automatisch ausgeblendet', 'Die Page zeigt einen leeren Wert', 'Es entsteht ein Security Conflict (Konsistenzfehler)'],
+    correct: 3, explanation: 'Mendix erkennt dies als Security Conflict der vor dem Deployment behoben werden muss.'
+},
+{
+    id: 'new-sec-004', category: 'security', categoryLabel: 'Security',
+    question: 'Welche Berechtigungen koennen in einer Entity Access Rule konfiguriert werden?',
+    options: ['Nur Lesen und Schreiben', 'Erstellen, Loeschen, Lesen und Schreiben pro Attribut, optional mit XPath-Constraint', 'Nur CRUD ohne weitere Granularitaet', 'Nur Lesen mit XPath-Filter'],
+    correct: 1, explanation: 'Entity Access Rules erlauben granulare Konfiguration: Create, Delete sowie Read und Write pro Attribut, plus optionale XPath-Constraints.'
+},
+{
+    id: 'new-sec-005', category: 'security', categoryLabel: 'Security',
+    question: 'Welche Konfigurationsoptionen gehoeren zur Password Policy in Mendix?',
+    options: ['Minimale Laenge, maximale Laenge, Ablaufdatum, Historie', 'Nur die minimale Passwortlaenge', 'Minimale Laenge, Ziffer erforderlich, Gross-/Kleinschreibung, Sonderzeichen', 'Nur Weak/Medium/Strong Presets'],
+    correct: 2, explanation: 'Die Password Policy bietet: Minimum length, Require digit, Require mixed case und Require symbol.'
+},
+{
+    id: 'new-sec-006', category: 'security', categoryLabel: 'Security',
+    question: 'Wie wird der Zugriff fuer Anonymous Users in Mendix konfiguriert?',
+    options: ['Eine spezifische User Role fuer anonyme Benutzer die den Zugriff steuert', 'Automatischer Zugriff auf alle oeffentlichen Pages', 'Durch eine IP-Whitelist', 'Anonymer Zugriff ist nicht moeglich'],
+    correct: 0, explanation: 'Fuer Anonymous Users wird eine spezifische User Role zugewiesen die ueber Module Roles den Zugriff definiert.'
+},
+{
+    id: 'new-sec-007', category: 'security', categoryLabel: 'Security',
+    question: 'Welche Bedrohungen werden durch den Mendix Runtime automatisch abgewehrt?',
+    options: ['Nur XSS und CSRF', 'Mendix bietet keinen automatischen Schutz', 'Nur SQL Injection', 'SQL Injection, XSS, CSRF und Broken Authentication'],
+    correct: 3, explanation: 'Der Mendix Runtime enthaelt eingebaute Sicherheitsmassnahmen gegen SQL Injection, XSS, CSRF und Broken Authentication.'
+},
+{
+    id: 'new-sec-008', category: 'security', categoryLabel: 'Security',
+    question: 'Welche Authentifizierungsmethoden stehen fuer Published REST Services zur Verfuegung?',
+    options: ['Nur Basic Authentication', 'Basic Authentication, Active Session und Custom Authentication (per Microflow)', 'OAuth 2.0, API Key und SAML', 'Nur Custom Authentication per Java Action'],
+    correct: 1, explanation: 'Published REST Services unterstuetzen Basic Authentication, Active Session und Custom Authentication ueber einen eigenen Microflow.'
+},
+
+// ============ INTEGRATION (Neue Fragen) ============
+{
+    id: 'new-int-001', category: 'integration', categoryLabel: 'Integration',
+    question: 'Was ist eine External Entity in Mendix und wie wird sie erstellt?',
+    options: ['Eine kopierte Entity aus einem anderen Modul', 'Eine Entity die nur ueber REST-Calls befuellt wird', 'Eine Entity ueber OData Services aus dem Data Hub Catalog', 'Eine Entity in einer externen Datenbank per SQL'],
+    correct: 2, explanation: 'External Entities werden ueber das Integration Pane aus dem Data Hub Catalog zum Domain Model hinzugefuegt.'
+},
+{
+    id: 'new-int-002', category: 'integration', categoryLabel: 'Integration',
+    question: 'Was passiert wenn man ein External Entity Object mit einer normalen Commit-Aktivitaet speichern will?',
+    options: ['Commit funktioniert nicht; stattdessen "Send External Object" verwenden', 'Normal in der lokalen Datenbank gespeichert', 'Automatisch an die Quell-Anwendung gesendet', 'Eine Kopie als lokale Entity erstellt'],
+    correct: 0, explanation: 'External Objects koennen nicht normal committed werden. Fuer Schreiboperationen muss Send External Object verwendet werden.'
+},
+{
+    id: 'new-int-003', category: 'integration', categoryLabel: 'Integration',
+    question: 'Wie wird ein Consumed REST Service in einem Microflow aufgerufen?',
+    options: ['Nur ueber Custom Java Actions', 'Ueber eine direkte Datenbankverbindung', 'Ueber Call Web Service mit WSDL', 'Ueber Call REST Service mit Import Mapping fuer JSON/XML'],
+    correct: 3, explanation: 'Ein REST Service wird ueber Call REST Service aufgerufen, die Antwort per Import Mapping in Entities gemappt.'
+},
+{
+    id: 'new-int-004', category: 'integration', categoryLabel: 'Integration',
+    question: 'Wie wird ein SOAP Web Service in Mendix konsumiert?',
+    options: ['Durch Import einer OpenAPI-Spezifikation', 'Durch Import einer WSDL-Datei und Call Web Service Aktivitaet', 'SOAP wird nicht unterstuetzt', 'Durch direktes XML-Schreiben'],
+    correct: 1, explanation: 'SOAP Web Services werden durch WSDL-Import konsumiert und ueber Call Web Service im Microflow aufgerufen.'
+},
+{
+    id: 'new-int-005', category: 'integration', categoryLabel: 'Integration',
+    question: 'Was wird beim Deployment einer App mit Published OData Services automatisch erstellt?',
+    options: ['Eine WSDL-Datei', 'Eine REST-API-Dokumentation', 'Der Service wird im Data Hub Catalog registriert', 'Ein API-Key per E-Mail'],
+    correct: 2, explanation: 'Published OData Services werden bei Mendix Cloud Deployment automatisch im Data Hub Catalog registriert.'
+},
+{
+    id: 'new-int-006', category: 'integration', categoryLabel: 'Integration',
+    question: 'Wie wird bei einem Consumed REST Service ein Bearer Token uebergeben?',
+    options: ['Ueber einen Custom HTTP Header Authorization: Bearer [token]', 'Ueber das eingebaute OAuth-Feld', 'Bearer Tokens werden nicht unterstuetzt', 'Ueber die URL als Query-Parameter'],
+    correct: 0, explanation: 'Bearer Token wird als Custom HTTP Header mit Key Authorization und Value Bearer [token] konfiguriert.'
+},
+
+// ============ PAGES & NAVIGATION (Neue Fragen) ============
+{
+    id: 'new-pages-001', category: 'pages', categoryLabel: 'Pages & Navigation',
+    question: 'Was ist ein "Master Layout" in Mendix?',
+    options: ['Ein Layout nur fuer die Startseite', 'Ein Layout das automatisch fuer alle Seiten gilt', 'Das erste Layout das erstellt wird', 'Ein Layout das als Basis fuer andere Layouts dient (Parent Layout)'],
+    correct: 3, explanation: 'Wenn ein Layout auf einem anderen basiert, ist das uebergeordnete das Master Layout.'
+},
+{
+    id: 'new-pages-002', category: 'pages', categoryLabel: 'Pages & Navigation',
+    question: 'Was ist der Unterschied zwischen einem Snippet und einem Building Block beim Einfuegen?',
+    options: ['Beide erstellen eine Referenz', 'Beide erstellen eine Kopie', 'Ein Snippet erstellt eine REFERENZ, ein Building Block eine KOPIE', 'Ein Building Block erstellt eine Referenz, ein Snippet eine Kopie'],
+    correct: 2, explanation: 'Ein Snippet wird per Snippet Call eingebettet und aendert sich zentral. Ein Building Block wird als Kopie eingefuegt.'
+},
+{
+    id: 'new-pages-003', category: 'pages', categoryLabel: 'Pages & Navigation',
+    question: 'Welches Widget verwendet man fuer Many-to-Many (Reference Set) Beziehungen?',
+    options: ['Reference Set Selector', 'Reference Selector', 'Input Reference Set Selector', 'Drop-down Widget'],
+    correct: 0, explanation: 'Der Reference Set Selector ist das Widget fuer Mehrfachauswahl bei N:M Assoziationen.'
+},
+{
+    id: 'new-pages-004', category: 'pages', categoryLabel: 'Pages & Navigation',
+    question: 'Wie funktioniert Context Propagation bei verschachtelten Data Views?',
+    options: ['Jede Data View muss eine eigene Datenbankabfrage ausfuehren', 'Verschachtelte Data Views sind nicht moeglich', 'Die innere ueberschreibt den Kontext der aeusseren', 'Die innere Data View kann ueber eine Assoziation auf das Objekt der aeusseren zugreifen'],
+    correct: 3, explanation: 'Eine innere Data View kann als Data Source einen Assoziationspfad verwenden der beim Kontextobjekt der aeusseren beginnt.'
+},
+{
+    id: 'new-pages-005', category: 'pages', categoryLabel: 'Pages & Navigation',
+    question: 'Was passiert wenn ein Tablet-Benutzer die App oeffnet aber kein Tablet-Profil existiert?',
+    options: ['Die App zeigt einen Fehler', 'Der Benutzer wird zum Responsive Web Profil weitergeleitet', 'Die App laedt nicht', 'Der Benutzer wird zum Phone-Profil weitergeleitet'],
+    correct: 1, explanation: 'Ohne Tablet-Profil wird automatisch das Responsive Web Profil als Fallback verwendet.'
+},
+{
+    id: 'new-pages-006', category: 'pages', categoryLabel: 'Pages & Navigation',
+    question: 'Was ist der Unterschied zwischen On Change und On Leave bei einem Input-Widget?',
+    options: ['On Leave wird vor On Change ausgeloest', 'On Change ist fuer Text-Felder, On Leave fuer Checkboxen', 'Es gibt keinen Unterschied', 'On Change wird nur bei Wertaenderung ausgeloest; On Leave IMMER wenn das Feld den Fokus verliert'],
+    correct: 3, explanation: 'On Change wird bei Wertaenderung getriggert. On Leave wird IMMER bei Fokusverlust getriggert, auch ohne Aenderung.'
+},
+{
+    id: 'new-pages-007', category: 'pages', categoryLabel: 'Pages & Navigation',
+    question: 'Wie funktioniert die Validation Feedback Aktivitaet in einem Microflow?',
+    options: ['Sie zeigt eine rote Fehlermeldung unterhalb des Widgets', 'Sie zeigt eine Popup-Nachricht', 'Sie schreibt den Fehler ins Log', 'Sie verhindert automatisch das Speichern'],
+    correct: 0, explanation: 'Validation Feedback zeigt eine rote Meldung unter dem Widget. WICHTIG: Sie verhindert NICHT automatisch den Commit.'
+},
+{
+    id: 'new-pages-008', category: 'pages', categoryLabel: 'Pages & Navigation',
+    question: 'Was sind die drei Design-Prinzipien von Atlas UI?',
+    options: ['Consistency, Accessibility, Responsiveness', 'Modularity, Scalability, Performance', 'Simplicity, Harmony, Flexibility', 'Speed, Power, Flexibility'],
+    correct: 2, explanation: 'Atlas UI basiert auf Simplicity, Harmony und Flexibility.'
+},
+{
+    id: 'new-pages-009', category: 'pages', categoryLabel: 'Pages & Navigation',
+    question: 'Was ist der Hauptvorteil des Offline-First Architekturansatzes?',
+    options: ['Die App benoetigt weniger Speicherplatz', 'Daten werden lokal gespeichert und die App funktioniert ohne Netzwerk', 'Die App ist immer schneller', 'Offline-First bedeutet keine Server-Kommunikation'],
+    correct: 1, explanation: 'Offline-First speichert Daten lokal und synchronisiert wenn wieder online.'
+},
+{
+    id: 'new-pages-010', category: 'pages', categoryLabel: 'Pages & Navigation',
+    question: 'Was sind Page Parameters in Mendix?',
+    options: ['Einstellungen fuer die Ladezeit', 'URL-Query-Parameter nur fuer SEO', 'CSS-Variablen fuer das Aussehen', 'Parameter die beim Oeffnen einer Seite uebergeben werden und als Kontextobjekte dienen'],
+    correct: 3, explanation: 'Page Parameters definieren welche Objekte beim Oeffnen einer Seite uebergeben werden muessen.'
+},
+{
+    id: 'new-pages-011', category: 'pages', categoryLabel: 'Pages & Navigation',
+    question: 'Was passiert mit der Conditional Visibility wenn die Bedingung false ist?',
+    options: ['Das Widget wird komplett aus dem DOM entfernt', 'Das Widget wird ausgegraut', 'Das Widget wird mit display:none versteckt', 'Das Widget zeigt einen Platzhalter'],
+    correct: 0, explanation: 'Wenn Conditional Visibility false ist, wird das Widget NICHT im DOM gerendert - komplett entfernt.'
+},
+{
+    id: 'new-pages-012', category: 'pages', categoryLabel: 'Pages & Navigation',
+    question: 'Was sind Pluggable Widgets und wie unterscheiden sie sich von klassischen Widgets?',
+    options: ['Widgets die per Drag-and-Drop eingefuegt werden', 'Nur eine Namensaenderung', 'Pluggable Widgets basieren auf React; klassische auf Dojo', 'Pluggable Widgets funktionieren nur in nativen Apps'],
+    correct: 2, explanation: 'Pluggable Widgets nutzen React und das neue Widget API. Klassische Widgets basieren auf Dojo.'
+},
+{
+    id: 'new-pages-013', category: 'pages', categoryLabel: 'Pages & Navigation',
+    question: 'Welches Widget empfiehlt Mendix als Alternative zum Template Grid fuer native mobile Seiten?',
+    options: ['Data Grid', 'Gallery oder List View', 'Flexbox Layout', 'Tab Container'],
+    correct: 1, explanation: 'Template Grid ist Dojo-basiert und nicht auf Native Mobile unterstuetzt. Gallery Widget oder List View sind die Alternativen.'
+},
+{
+    id: 'new-pages-014', category: 'pages', categoryLabel: 'Pages & Navigation',
+    question: 'Wie kann man ein Navigation Profile eines bestimmten Typs erzwingen?',
+    options: ['Durch eine Einstellung in der App-Sicherheit', 'Durch eine CSS-Media-Query', 'Das ist nicht moeglich', 'Durch Hinzufuegen eines profile Query-String-Parameters zur URL'],
+    correct: 3, explanation: 'Man kann ein Profil erzwingen indem man ?profile=Responsive oder ?profile=Tablet zur URL hinzufuegt.'
+},
+{
+    id: 'new-pages-015', category: 'pages', categoryLabel: 'Pages & Navigation',
+    question: 'Was ist der Unterschied zwischen Page URL und Microflow URL fuer Deep Links?',
+    options: ['Es gibt keinen Unterschied', 'Page URLs oeffnen direkt eine Seite; Microflow URLs fuehren zuerst einen Microflow aus', 'Page URLs sind nur fuer Popups', 'Microflow URLs funktionieren nur offline'],
+    correct: 1, explanation: 'Page URLs oeffnen die Seite direkt. Microflow URLs fuehren zuerst Logik aus, z.B. Berechtigungspruefung.'
+},
 ];

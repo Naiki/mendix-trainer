@@ -2,7 +2,8 @@
 <html lang="de" class="dark">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <meta name="format-detection" content="telephone=no">
     <meta name="description" content="Mendix Trainer - Interaktive Lern-App für die Mendix Intermediate und Advanced Developer Zertifizierung. 140+ Prüfungsfragen mit Erklärungen.">
     <meta name="theme-color" content="#0595DB">
     <meta name="author" content="Mendix Trainer">
@@ -15,7 +16,8 @@
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="MX Trainer">
-    <link rel="apple-touch-icon" href="icon-192.svg">
+    <link rel="apple-touch-icon" sizes="180x180" href="icon-180.png">
+    <link rel="apple-touch-icon" sizes="192x192" href="icon-192.png">
 
     <!-- Open Graph -->
     <meta property="og:title" content="Mendix Trainer - Zertifizierungsvorbereitung">
@@ -28,33 +30,13 @@
     <!-- Favicon: Graduation Cap SVG -->
     <link rel="icon" type="image/svg+xml" href="icon-192.svg">
 
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script>
-        tailwind.config = {
-            darkMode: 'class',
-            theme: {
-                extend: {
-                    colors: {
-                        mendix: {
-                            blue: '#0595DB',
-                            dark: '#003C71',
-                            light: '#E8F4FD',
-                            green: '#12B76A',
-                            red: '#F04438',
-                            orange: '#F79009',
-                            purple: '#7A5AF8',
-                        }
-                    }
-                }
-            }
-        }
-    </script>
+    <link rel="stylesheet" href="tailwind.min.css">
     <link rel="stylesheet" href="style.css">
 </head>
 <body class="bg-gray-950 text-gray-100 min-h-screen">
-    <div id="app" class="max-w-4xl mx-auto px-4 py-6">
+    <main id="app" class="max-w-4xl mx-auto px-4 py-6" role="main">
         <!-- Content rendered by app.js -->
-    </div>
+    </main>
 
     <script src="questions-intermediate.js"></script>
     <script src="questions-advanced.js"></script>
