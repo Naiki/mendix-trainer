@@ -167,12 +167,12 @@ const INTERMEDIATE_QUESTIONS = [
     question: 'Was ist eine "Rule" in Mendix?',
     options: [
         'Eine Validierungsregel auf einem Attribut',
-        'Ein Microflow-ähnliches Konstrukt das immer einen Boolean zurückgibt',
+        'Ein Microflow-ähnliches Konstrukt das einen Boolean oder eine Enumeration zurückgibt',
         'Eine Sicherheitsregel für Entity Access',
         'Ein vordefinierter Workflow-Schritt'
     ],
     correct: 1,
-    explanation: 'Eine Rule ist ein Microflow-ähnliches Konstrukt das immer einen Boolean (true/false) zurückgibt. Rules werden typischerweise in Exclusive Splits verwendet, um die Entscheidungslogik wiederverwendbar und testbar zu halten.'
+    explanation: 'Eine Rule ist ein Microflow-ähnliches Konstrukt das einen Boolean (true/false) oder eine Enumeration zurückgibt. Rules werden typischerweise in Exclusive Splits verwendet, um die Entscheidungslogik wiederverwendbar und testbar zu halten.'
 },
 {
     id: 'int-mf-003',
@@ -186,7 +186,7 @@ const INTERMEDIATE_QUESTIONS = [
         'Count'
     ],
     correct: 2,
-    explanation: 'Die verfügbaren Aggregat-Funktionen in Mendix Microflows sind: Sum, Average, Count, Minimum und Maximum. Median ist nicht als eingebaute Aggregat-Funktion verfügbar.'
+    explanation: 'Die verfügbaren Aggregat-Funktionen in Mendix Microflows sind: Sum, Average, Count, Minimum, Maximum sowie All, Any und Reduce. Median ist nicht als eingebaute Aggregat-Funktion verfügbar.'
 },
 {
     id: 'int-mf-004',
@@ -392,13 +392,13 @@ const INTERMEDIATE_QUESTIONS = [
     categoryLabel: 'Domain Model',
     question: 'Welche Event Handler gibt es für Entitäten in Mendix?',
     options: [
-        'Before Create, After Create, Before Delete, After Delete',
         'Before Commit, After Commit, Before Delete, After Delete',
         'Before Commit, After Commit, Before Delete, After Delete, Before Rollback, After Rollback',
+        'Before Create, After Create, Before Commit, After Commit, Before Delete, After Delete, Before Rollback, After Rollback',
         'Before Save, After Save, Before Delete, After Delete'
     ],
     correct: 2,
-    explanation: 'Mendix hat sechs Event Handler: Before Commit, After Commit, Before Delete, After Delete, Before Rollback und After Rollback. Es gibt kein Before/After Create Event. Die Rollback-Events werden ausgelöst wenn ein Objekt zurückgesetzt wird.'
+    explanation: 'Mendix hat acht Event Handler (4 Typen × 2 Momente): Before/After Create, Before/After Commit, Before/After Delete und Before/After Rollback. Die Create-Events werden beim Erstellen eines Objekts ausgelöst, die Rollback-Events wenn ein Objekt zurückgesetzt wird.'
 },
 {
     id: 'int-dom-009',
@@ -1151,12 +1151,12 @@ const INTERMEDIATE_QUESTIONS = [
     question: 'Was kann ein Nanoflow NICHT tun?',
     options: [
         'Objekteigenschaften ändern',
-        'Direkte Datenbankabfragen (Retrieve from Database) ausführen',
+        'Java Actions ausführen',
         'Benutzereingaben validieren',
         'Lokale Variablen erstellen'
     ],
     correct: 1,
-    explanation: 'Nanoflows laufen auf dem Client (im Browser) und haben keinen direkten Datenbankzugriff. "Retrieve from Database" ist nicht verfügbar - stattdessen kann man "Retrieve over Association" nutzen oder einen Microflow als Datenquelle aufrufen.'
+    explanation: 'Nanoflows können keine Java Actions ausführen, da diese serverseitige JVM-Funktionalität erfordern. Seit Mendix 9.12+ können Nanoflows jedoch Retrieve from Database durchführen (mit Server-Roundtrip). Für Java Actions, Import/Export Mappings und Scheduled Events muss man Microflows verwenden.'
 },
 {
     id: 'int-mf-012',
@@ -1170,7 +1170,7 @@ const INTERMEDIATE_QUESTIONS = [
         'Für Java Actions'
     ],
     correct: 1,
-    explanation: 'Nanoflows eignen sich für schnelle UI-Logik die keinen Server-Roundtrip benötigt: Validierung, bedingte Sichtbarkeit, lokale Berechnungen. Sie reagieren sofort ohne Netzwerk-Latenz. Für Datenbankzugriffe, Java Actions oder Scheduled Events muss man Microflows verwenden.'
+    explanation: 'Nanoflows eignen sich für schnelle UI-Logik die keinen Server-Roundtrip benötigt: Validierung, bedingte Sichtbarkeit, lokale Berechnungen. Sie reagieren sofort ohne Netzwerk-Latenz. Seit Mendix 9.12+ können Nanoflows auch Retrieve from Database ausführen. Für Java Actions oder Scheduled Events muss man Microflows verwenden.'
 },
 {
     id: 'int-mf-013',
@@ -1325,12 +1325,12 @@ const INTERMEDIATE_QUESTIONS = [
     question: 'Was ist eine wichtige Einschränkung von External Entities?',
     options: [
         'Sie können nicht auf Seiten verwendet werden',
-        'Sie sind standardmäßig read-only und können keine lokalen Assoziationen zu anderen Entitäten haben',
+        'Jeder Datenzugriff erfordert einen Netzwerk-Call zum Quell-Service, und Schreiboperationen erfordern "Send External Object" statt Commit',
         'Sie funktionieren nur mit REST-Services',
         'Sie können maximal 10 Attribute haben'
     ],
     correct: 1,
-    explanation: 'External Entities (aus OData/Data Hub) sind standardmäßig read-only und können keine Assoziationen zu lokalen Entitäten im Domain Model haben. Um sie mit lokalen Daten zu verknüpfen, muss man eine lokale Kopie erstellen oder über einen gemeinsamen Schlüssel joinen.'
+    explanation: 'External Entities (aus OData/Data Hub) erfordern bei jedem Zugriff einen Netzwerk-Call. Schreiboperationen nutzen "Send External Object" statt normalem Commit. Sie KÖNNEN lokale Assoziationen haben (lokale Entity muss Owner sein) und unterstützen CRUD wenn der OData-Service dies bereitstellt.'
 },
 {
     id: 'int-int-013',

@@ -1,8 +1,8 @@
-// Mendix Trainer - Main Application (Production v1.1.0)
+// Mendix Trainer - Main Application (Production v2.0.1)
 // Zero dependencies, pure vanilla JS
 
 // ============ CONSTANTS ============
-const APP_VERSION = '2.0.0';
+const APP_VERSION = '2.0.1';
 const EXAM_QUESTION_COUNT = 50;
 const PRACTICE_COUNT = 20;
 const PASS_THRESHOLD = 75;

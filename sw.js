@@ -1,5 +1,5 @@
 // Mendix Trainer - Service Worker (PWA + Notifications)
-const CACHE_NAME = 'mendix-trainer-v2.0.0';
+const CACHE_NAME = 'mendix-trainer-v2.0.1';
 
 // Determine base path dynamically (works on GitHub Pages subpaths)
 const BASE = self.location.pathname.replace(/sw\.js$/, '');

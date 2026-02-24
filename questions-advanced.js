@@ -1510,9 +1510,9 @@ const ADVANCED_QUESTIONS = [
 },
 {
     id: 'new-perf-009', category: 'logging', categoryLabel: 'Logging',
-    question: 'Was zeigt der Log-Node ConnectionBus auf Trace-Level?',
-    options: ['Alle SQL-Queries die an die Datenbank gesendet werden', 'Nur Verbindungsfehler', 'Nur die Anzahl aktiver Verbindungen', 'HTTP-Verbindungen zu externen Services'],
-    correct: 0, explanation: 'ConnectionBus auf Trace zeigt alle SQL-Queries. Unverzichtbar fuer Performance-Diagnose.'
+    question: 'Welcher Log-Node zeigt auf Trace-Level alle SQL-Queries?',
+    options: ['ConnectionBus_Queries', 'ConnectionBus', 'DatabaseCore', 'SQL_Logger'],
+    correct: 0, explanation: 'Der Log-Node ConnectionBus_Queries auf Trace-Level zeigt alle SQL-Queries. Der uebergeordnete ConnectionBus-Node hat Sub-Nodes wie _Queries, _Mapping, _Retrieve, _Security, _Update und _Validation.'
 },
 {
     id: 'new-perf-010', category: 'performance', categoryLabel: 'Performance',
@@ -1573,16 +1573,16 @@ const ADVANCED_QUESTIONS = [
 {
     id: 'new-java-004', category: 'java', categoryLabel: 'Java Actions',
     question: 'Welche Core API Methode ruft Objekte per XPath aus der Datenbank ab?',
-    options: ['Core.queryDatabase()', 'Core.findObjects()', 'Core.selectByXPath()', 'Core.retrieveXPathQuery()'],
-    correct: 3, explanation: 'Core.retrieveXPathQuery() ruft synchron Objekte basierend auf einer XPath-Abfrage ab.'
+    options: ['Core.queryDatabase()', 'Core.createXPathQuery()', 'Core.selectByXPath()', 'Core.retrieveXPathQuery()'],
+    correct: 1, explanation: 'Core.createXPathQuery() ist die aktuelle Methode fuer XPath-Abfragen in Java Actions. Die aeltere Core.retrieveXPathQuery() ist seit Mendix 7.17 deprecated. createXPathQuery bietet eine Fluent API mit setVariable(), setAmount() und execute().'
 },
 
 // ============ TESTING (Neue Fragen) ============
 {
     id: 'new-testing-001', category: 'testing', categoryLabel: 'Testing',
     question: 'Wie muss ein Microflow benannt sein damit er vom UnitTesting-Modul erkannt wird?',
-    options: ['Name muss mit Test beginnen', 'Name muss mit Unit beginnen', 'Name muss mit Verify beginnen', 'Name muss mit Check beginnen'],
-    correct: 0, explanation: 'Test-Microflows muessen mit Test beginnen, ohne Eingabeparameter, Boolean oder String als Rueckgabetyp.'
+    options: ['Name muss mit Test_ oder UT_ beginnen', 'Name muss mit Unit beginnen', 'Name muss mit Verify beginnen', 'Name muss mit Check beginnen'],
+    correct: 0, explanation: 'Test-Microflows muessen mit Test_ oder UT_ beginnen (case-insensitive), ohne Eingabeparameter, Boolean oder String als Rueckgabetyp.'
 },
 {
     id: 'new-testing-002', category: 'testing', categoryLabel: 'Testing',
