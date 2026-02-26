@@ -1193,8 +1193,8 @@ export const ADVANCED_QUESTIONS = [
         'Es tritt ein Synchronisationskonflikt auf der im Error Handler der Sync-Aktion behandelt werden muss',
         'Offline-Bearbeitung desselben Objekts ist nicht möglich'
     ],
-    correct: 2,
-    explanation: 'Bei gleichzeitiger Offline-Bearbeitung desselben Objekts entsteht ein Synchronisationskonflikt. Mendix erkennt dies und löst einen Fehler in der Synchronisations-Aktion aus. Der Entwickler muss eine Konfliktlösungsstrategie implementieren, z.B. "letzte Änderung gewinnt" oder manuelle Auflösung.'
+    correct: 1,
+    explanation: 'Mendix verwendet standardmäßig einen "Last Write Wins"-Ansatz bei der Offline-Synchronisation. Wenn zwei Benutzer dasselbe Objekt offline bearbeiten, überschreibt die letzte Synchronisation die vorherige — ohne Fehlermeldung. Entwickler können über Custom Synchronization Logic eine eigene Konfliktbehandlung implementieren, wenn nötig.'
 },
 {
     id: 'adv-mob-004',
