@@ -525,12 +525,12 @@ export const ADVANCED_QUESTIONS = [
     question: 'Wie ist die Styling-Architektur in Mendix aufgebaut?',
     options: [
         'Nur Inline-Styles',
-        'SASS-basiert mit Theme-Ordner, Design Properties, und der Möglichkeit Custom-CSS/SASS zu schreiben',
+        'Theme-Ordner (themesource/theme), Design Properties, und die Möglichkeit Custom-CSS zu schreiben — seit Atlas UI 4 (Mendix 10+) mit CSS Custom Properties statt SASS',
         'Nur über Design Properties, kein manuelles CSS möglich',
         'Bootstrap-basiert ohne Anpassungsmöglichkeit'
     ],
     correct: 1,
-    explanation: 'Mendix nutzt SASS für Styling. Die Architektur: Atlas UI als Basis-Theme, Design Properties für No-Code-Styling, und die Möglichkeit Custom-SASS/CSS im "themesource" Ordner zu schreiben für volle Kontrolle.'
+    explanation: 'Mendix Styling-Architektur: Atlas UI als Basis-Theme, Design Properties für No-Code-Styling, und Custom-CSS im "themesource" Ordner. Seit Atlas UI 4 (Mendix 10+) werden CSS Custom Properties (Variablen) statt SASS-Variablen verwendet. SASS wird weiterhin unterstützt, ist aber nicht mehr die primäre Methode.'
 },
 
 // ============ ERROR HANDLING ============
@@ -541,12 +541,12 @@ export const ADVANCED_QUESTIONS = [
     question: 'Was macht die "Error Handling" Einstellung auf einer Microflow-Aktivität?',
     options: [
         'Sie loggt den Fehler automatisch',
-        'Sie definiert wie mit Fehlern umgegangen wird: Abort, Custom (eigener Pfad), oder Continue',
+        'Sie definiert wie mit Fehlern umgegangen wird: Rollback, Custom with/without Rollback, oder Continue',
         'Sie sendet eine Benachrichtigung an den Admin',
         'Sie verhindert dass Fehler auftreten'
     ],
     correct: 1,
-    explanation: 'Error Handling Optionen: Abort (Microflow bricht ab, Rollback), Custom with Rollback (eigener Fehlerbehandlungspfad mit Rollback), Custom without Rollback (eigener Pfad ohne Rollback), Continue (Fehler ignorieren, weiter).'
+    explanation: 'Error Handling Optionen: Rollback (Standard — Microflow bricht ab, alle Änderungen werden zurückgerollt), Custom with Rollback (eigener Fehlerbehandlungspfad mit Rollback), Custom without Rollback (eigener Pfad, Änderungen bleiben erhalten), Continue (Fehler ignorieren, weiter).'
 },
 {
     id: 'adv-err-002',
@@ -989,12 +989,12 @@ export const ADVANCED_QUESTIONS = [
     question: 'Was ist Optimistic Concurrency Control in Mendix und wann tritt ein Conflict auf?',
     options: [
         'Ein Mechanismus der verhindert dass zwei User gleichzeitig online sind',
-        'Mendix speichert einen Hash des Objektzustands -- wenn zwei User dasselbe Objekt ändern, erhält der zweite beim Commit einen Conflict',
+        'Mendix speichert eine Versionsnummer (MxObjectVersion) pro Objekt -- wenn zwei User dasselbe Objekt ändern, erhält der zweite beim Commit einen Conflict',
         'Ein Locking-Mechanismus der Objekte für andere User sperrt',
         'Concurrency gibt es nur in Java Actions'
     ],
     correct: 1,
-    explanation: 'Mendix nutzt Optimistic Locking: Beim Laden eines Objekts wird ein Hash gespeichert. Beim Commit wird geprüft ob sich das Objekt zwischenzeitlich geändert hat. Falls ja, tritt ein Conflict auf der im Microflow behandelt werden muss.'
+    explanation: 'Mendix nutzt Optimistic Locking: Jedes Objekt hat eine Versionsnummer (MxObjectVersion). Beim Commit wird geprüft ob sich die Version zwischenzeitlich geändert hat. Falls ja, wird eine ConcurrentModificationRuntimeException geworfen die im Microflow behandelt werden muss.'
 },
 {
     id: 'adv-sched-001',
@@ -1017,12 +1017,12 @@ export const ADVANCED_QUESTIONS = [
     question: 'Wie generiert man PDF-Dokumente aus Mendix-Daten?',
     options: [
         'PDFs können in Mendix nicht generiert werden',
-        'Über Document Templates die ein Layout definieren und mit Mendix-Daten gefüllt werden, dann als PDF exportiert',
+        'Über Document Templates (Mendix 9) oder das PDF Document Generation Modul (Mendix 10+) die ein Layout mit Mendix-Daten füllen und als PDF exportieren',
         'Nur über externe PDF-Libraries in Java',
         'Durch Screenshot der Seite als PDF'
     ],
     correct: 1,
-    explanation: 'Mendix bietet Document Templates: Man erstellt ein Template mit Header, Body, Tabellen, Bildern etc. und bindet Domain-Model-Daten ein. Mit der "Generate Document" Aktivität im Microflow wird das Template mit Daten gefüllt und als PDF generiert.'
+    explanation: 'Für PDF-Generierung gab es in Mendix 9 Document Templates mit der "Generate Document" Aktivität. In Mendix 10+ sind Document Templates deprecated — stattdessen wird das "PDF Document Generation" Marketplace-Modul empfohlen, das flexiblere Layouts mit modernen Widgets ermöglicht.'
 },
 {
     id: 'adv-xpath-005',

@@ -222,13 +222,13 @@ export const INTERMEDIATE_QUESTIONS = [
     categoryLabel: 'Microflows',
     question: 'Wie setzt man einen Breakpoint zum Debuggen in einem Microflow?',
     options: [
-        'Rechtsklick auf eine Aktivität > "Toggle Breakpoint"',
+        'Rechtsklick auf eine Aktivität > "Add breakpoint"',
         'Im Menü: Run > Set Breakpoint',
         'Man zieht ein Debug-Element aus der Toolbox',
         'Breakpoints sind nur in Java-Aktionen möglich'
     ],
     correct: 0,
-    explanation: 'Breakpoints werden per Rechtsklick auf eine Microflow-Aktivität gesetzt ("Toggle Breakpoint"). Beim Ausführen stoppt der Microflow an dieser Stelle und man kann Variablen inspizieren.'
+    explanation: 'Breakpoints werden per Rechtsklick auf eine Microflow-Aktivität gesetzt ("Add breakpoint"). Beim Ausführen stoppt der Microflow an dieser Stelle und man kann Variablen inspizieren. Entfernen via "Remove breakpoint" im gleichen Kontextmenü.'
 },
 {
     id: 'int-mf-007',
@@ -1090,15 +1090,15 @@ export const INTERMEDIATE_QUESTIONS = [
     id: 'int-wf-002',
     category: 'workflows',
     categoryLabel: 'Workflows',
-    question: 'Was ist der Unterschied zwischen einem User Task und einem System Task in einem Workflow?',
+    question: 'Was ist der Unterschied zwischen einem User Task und einem Call Microflow Element in einem Workflow?',
     options: [
-        'Ein User Task wird von einem Benutzer manuell bearbeitet, ein System Task wird automatisch durch einen Microflow ausgeführt',
+        'Ein User Task wird von einem Benutzer manuell bearbeitet, ein Call Microflow wird automatisch ausgeführt',
         'Es gibt keinen Unterschied',
-        'Ein User Task läuft auf dem Client, ein System Task auf dem Server',
-        'Ein User Task ist optional, ein System Task ist verpflichtend'
+        'Ein User Task läuft auf dem Client, ein Call Microflow auf dem Server',
+        'Ein User Task ist optional, ein Call Microflow ist verpflichtend'
     ],
     correct: 0,
-    explanation: 'Ein User Task erfordert eine menschliche Aktion - ein Benutzer muss eine Aufgabe auf einer Task-Seite bearbeiten und abschließen. Ein System Task (Call Microflow) wird automatisch ausgeführt und benötigt keine menschliche Interaktion.'
+    explanation: 'Ein User Task erfordert eine menschliche Aktion — ein Benutzer muss eine Aufgabe auf einer Task-Seite bearbeiten und abschließen. Ein Call Microflow Element wird automatisch vom Workflow-Engine ausgeführt und benötigt keine menschliche Interaktion.'
 },
 {
     id: 'int-wf-003',
@@ -1278,29 +1278,15 @@ export const INTERMEDIATE_QUESTIONS = [
     id: 'int-collab-007',
     category: 'collaboration',
     categoryLabel: 'Collaboration',
-    question: 'Was macht der MxAssist Performance Bot?',
+    question: 'Was ist der Best Practice Recommender (ehemals MxAssist Performance Bot) in Mendix?',
     options: [
         'Er optimiert automatisch die Datenbank',
-        'Er analysiert das App-Modell und gibt Empfehlungen zur Performance-Verbesserung direkt in Studio Pro',
+        'Er analysiert das App-Modell gegen Mendix Best Practices und gibt Verbesserungsvorschläge direkt in Studio Pro',
         'Er misst die Ladezeit der App im Browser',
         'Er skaliert die App automatisch in der Cloud'
     ],
     correct: 1,
-    explanation: 'MxAssist Performance Bot analysiert das App-Modell in Studio Pro und identifiziert potenzielle Performance-Probleme. Er gibt konkrete Empfehlungen wie z.B. fehlende Indizes, N+1-Query-Probleme oder ineffiziente Microflow-Patterns und zeigt diese mit Severity-Level an.'
-},
-{
-    id: 'int-collab-008',
-    category: 'collaboration',
-    categoryLabel: 'Collaboration',
-    question: 'Was ist der Best Practice Recommender in Mendix?',
-    options: [
-        'Eine externe Website mit Dokumentation',
-        'Ein Tool das das App-Modell gegen Mendix Best Practices prüft und Verbesserungsvorschläge anzeigt',
-        'Ein Forum wo Entwickler Fragen stellen können',
-        'Ein Marketplace-Modul das installiert werden muss'
-    ],
-    correct: 1,
-    explanation: 'Der Best Practice Recommender (Teil von MxAssist) prüft das App-Modell automatisch gegen Mendix Development Best Practices. Er erkennt z.B. zu komplexe Microflows, fehlende Sicherheitskonfigurationen oder nicht empfohlene Patterns und zeigt sie als Warnungen an.'
+    explanation: 'Der Best Practice Recommender (seit Mendix 10.12 umbenannt von MxAssist Performance Bot, Teil von Maia) analysiert das App-Modell in Studio Pro. Er prüft gegen Mendix Best Practices und erkennt z.B. fehlende Indizes, zu komplexe Microflows, N+1-Query-Probleme oder fehlende Sicherheitskonfigurationen. Ergebnisse werden mit Severity-Level angezeigt.'
 },
 
 // ============ INTEGRATION (Ergänzung) ============
