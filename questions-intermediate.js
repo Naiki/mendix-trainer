@@ -1,7 +1,7 @@
 // Mendix Intermediate Developer - Question Database
 // Categories: xpath, microflows, domain, pages, collaboration, security, integration, agile, workflows
 
-const INTERMEDIATE_QUESTIONS = [
+export const INTERMEDIATE_QUESTIONS = [
 
 // ============ XPATH ============
 {

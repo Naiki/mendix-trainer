@@ -4,5 +4,3 @@ Thumbs.db
 *.log
 tailwind-input.css
 tailwind.config.js
-package.json
-package-lock.json

@@ -1,7 +1,7 @@
 // Mendix Advanced Developer - Question Database
 // Categories: domain, optimization, xpath, security, performance, ux, errorhandling, logging, integration, testing, java, workflows, mobile, deployment
 
-const ADVANCED_QUESTIONS = [
+export const ADVANCED_QUESTIONS = [
 
 // ============ ADVANCED DOMAIN MODELING ============
 {

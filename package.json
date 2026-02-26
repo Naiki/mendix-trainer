@@ -1,0 +1,27 @@
+{
+  "name": "mendix-trainer",
+  "version": "3.0.0",
+  "description": "Interaktive Lern-App für die Mendix Intermediate & Advanced Developer Zertifizierung",
+  "main": "src/app.js",
+  "scripts": {
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "start": "node server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Naiki/mendix-trainer.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "module",
+  "bugs": {
+    "url": "https://github.com/Naiki/mendix-trainer/issues"
+  },
+  "homepage": "https://github.com/Naiki/mendix-trainer#readme",
+  "devDependencies": {
+    "tailwindcss": "^3.4.19",
+    "vitest": "^4.0.18"
+  }
+}

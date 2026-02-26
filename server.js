@@ -1,10 +1,12 @@
 // Mendix Trainer - Lokaler HTTP Server (zero dependencies)
-const http = require('http');
-const fs = require('fs');
-const path = require('path');
+import http from 'node:http';
+import fs from 'node:fs';
+import path from 'node:path';
+import os from 'node:os';
+import { fileURLToPath } from 'node:url';
 
 const PORT = 3000;
-const DIR = __dirname;
+const DIR = path.dirname(fileURLToPath(import.meta.url));
 
 const MIME_TYPES = {
     '.html': 'text/html; charset=utf-8',
@@ -14,6 +16,15 @@ const MIME_TYPES = {
     '.svg': 'image/svg+xml',
     '.png': 'image/png',
     '.ico': 'image/x-icon',
+};
+
+// Security headers applied to every response
+const SECURITY_HEADERS = {
+    'X-Content-Type-Options': 'nosniff',
+    'X-Frame-Options': 'DENY',
+    'Referrer-Policy': 'strict-origin-when-cross-origin',
+    'Permissions-Policy': 'camera=(), microphone=(), geolocation=()',
+    'Content-Security-Policy': "default-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; connect-src 'self'",
 };
 
 const server = http.createServer((req, res) => {
@@ -42,7 +53,7 @@ const server = http.createServer((req, res) => {
                         res.end('Server Error');
                         return;
                     }
-                    res.writeHead(200, { 'Content-Type': 'text/html; charset=utf-8' });
+                    res.writeHead(200, { 'Content-Type': 'text/html; charset=utf-8', ...SECURITY_HEADERS });
                     res.end(indexData);
                 });
                 return;
@@ -57,13 +68,13 @@ const server = http.createServer((req, res) => {
         res.writeHead(200, {
             'Content-Type': contentType,
             'Cache-Control': cacheControl,
+            ...SECURITY_HEADERS,
         });
         res.end(data);
     });
 });
 
 server.listen(PORT, '0.0.0.0', () => {
-    const os = require('os');
     const interfaces = os.networkInterfaces();
     let localIP = 'localhost';
 
